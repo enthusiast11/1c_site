@@ -11,7 +11,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
 
 const VisuallyHiddenInput = styled("input")({
@@ -36,6 +35,10 @@ const Main = () => {
     return date.toLocaleDateString("ru-RU");
   };
 
+  const isTimeValue = (value: string | number): boolean => {
+    return typeof value === "string" && !!value.match(/^\d{1,2}:\d{2}$/);
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -55,7 +58,13 @@ const Main = () => {
       const formattedData = jsonData.map((row) =>
         row.map((cell) => {
           if (typeof cell === "number") {
-            return formatExcelDate(cell);
+            if (cell > 40000 && cell < 60000) {
+              return formatExcelDate(cell);
+            }
+            return cell.toLocaleString("ru-RU");
+          }
+          if (isTimeValue(cell)) {
+            return cell;
           }
           return cell;
         })
