@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Ilogin, useSendLogPassMutation } from "./store/rtk-query/login";
-import { error } from "console";
 import { useNavigate } from "react-router";
 import { Alert, Button, Container, Stack, TextField } from "@mui/material";
 
@@ -9,7 +8,7 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
 
-  const [sendLogPass, { isLoading, error }] = useSendLogPassMutation();
+  const [sendLogPass, { error }] = useSendLogPassMutation();
 
   const sendData = async () => {
     const body: Ilogin = {
