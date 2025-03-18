@@ -4,6 +4,7 @@ import { store } from "./store";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { Login } from "./Login";
 import Main from "./Main";
+import AdminPanel from "./AdminPanel";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/main" element={<Main />} />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
       </BrowserRouter>
     </Provider>
