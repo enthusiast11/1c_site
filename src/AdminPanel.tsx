@@ -10,6 +10,7 @@ import {
   Container,
   TextField,
 } from "@mui/material";
+import NavBar from "./NavBar";
 
 const AdminPanel = () => {
   const dispatch = useDispatch();
@@ -21,33 +22,72 @@ const AdminPanel = () => {
 
   const [isEdit, setIsEdit] = useState<true | false>(true);
   const [url] = useState<string>("https//test.ru");
+  const saveChanges = () => {
+    console.log("Изменения сохранены");
+  };
 
   return (
-    <Container>
-      <Box>
-        <TextField
-          variant="filled"
-          value={url}
-          disabled={isEdit}
-          id="url_main"
-        ></TextField>
-        <Button variant="contained" onClick={() => setIsEdit(!isEdit)}>
-          Редактировать
-        </Button>
-      </Box>
-      <BottomNavigation>
-        <Button variant="contained" size="small">
-          Сохранить
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={() => navigate("/main")}
+    <Box sx={{ display: "flex" }}>
+      <NavBar />
+      <Container
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+
+          padding: "20px",
+          gap: "20px",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            gap: "10px",
+            alignItems: "center",
+          }}
         >
-          Главная страница
-        </Button>
-      </BottomNavigation>
-    </Container>
+          <TextField
+            variant="filled"
+            value={url}
+            disabled={!isEdit}
+            id="url_main"
+            fullWidth
+          />
+          <Button
+            variant="contained"
+            onClick={() => setIsEdit(!isEdit)}
+            sx={{
+              flexShrink: 0,
+            }}
+          >
+            {isEdit ? "Отменить редактирование" : "Редактировать"}
+          </Button>
+        </Box>
+
+        <BottomNavigation
+          sx={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+
+            padding: "10px 24px 10px 278px",
+            display: "flex",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button variant="contained" size="small" onClick={saveChanges}>
+            Сохранить
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => navigate("/main")}
+          >
+            Главная страница
+          </Button>
+        </BottomNavigation>
+      </Container>
+    </Box>
   );
 };
 
