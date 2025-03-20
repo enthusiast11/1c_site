@@ -10,7 +10,6 @@ import {
   List,
   ListItem,
   ListItemButton,
-  ListItemIcon,
   ListItemText,
   Paper,
   Table,
@@ -94,9 +93,7 @@ const Main = (props: Props) => {
 
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [isClosing, setIsClosing] = React.useState(false);
-
-  let menuItem = ["Выйти"];
+  const [, setIsClosing] = React.useState(false);
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -107,11 +104,6 @@ const Main = (props: Props) => {
     setIsClosing(false);
   };
 
-  const handleDrawerToggle = () => {
-    if (!isClosing) {
-      setMobileOpen(!mobileOpen);
-    }
-  };
   const LogOut = () => {
     navigate("/");
     localStorage.removeItem("admin");
