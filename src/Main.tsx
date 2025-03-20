@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import * as XLSX from "xlsx";
 import { styled } from "@mui/material/styles";
 import {
+  Box,
   Button,
   Container,
+  Divider,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -12,6 +20,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -24,9 +33,16 @@ const VisuallyHiddenInput = styled("input")({
   whiteSpace: "nowrap",
   width: 1,
 });
+const drawerWidth = 240;
 
-const Main = () => {
+interface Props {
+  window?: () => Window;
+}
+
+const Main = (props: Props) => {
   const [excelData, setExcelData] = useState<Array<Array<string | number>>>([]);
+  const admin = localStorage.getItem("admin");
+  const navigate = useNavigate();
 
   const formatExcelDate = (serial: number): string => {
     const excelEpoch = new Date(1899, 11, 30);
@@ -74,45 +90,124 @@ const Main = () => {
     };
     reader.readAsArrayBuffer(file);
   };
+  // Material ui
+
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [isClosing, setIsClosing] = React.useState(false);
+
+  let menuItem = ["Выйти"];
+
+  const handleDrawerClose = () => {
+    setIsClosing(true);
+    setMobileOpen(false);
+  };
+
+  const handleDrawerTransitionEnd = () => {
+    setIsClosing(false);
+  };
+
+  const handleDrawerToggle = () => {
+    if (!isClosing) {
+      setMobileOpen(!mobileOpen);
+    }
+  };
+  const LogOut = () => {
+    navigate("/");
+    localStorage.removeItem("admin");
+  };
+
+  const drawer = (
+    <div>
+      <Divider />
+      <List>
+        <ListItem disablePadding>
+          <ListItemButton>
+            <ListItemText primary="Выйти" onClick={LogOut} />
+          </ListItemButton>
+        </ListItem>
+        {admin ? (
+          <ListItemButton>
+            <ListItemText
+              primary="Админ панель"
+              onClick={() => navigate("/admin")}
+            />
+          </ListItemButton>
+        ) : (
+          ""
+        )}
+      </List>
+      <Divider />
+    </div>
+  );
+
+  // Remove this const when copying and pasting into your project.
+  const container =
+    window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Container sx={{ width: "80%" }}>
-      <Button component="label" variant="contained">
-        Upload Excel File
-        <VisuallyHiddenInput
-          type="file"
-          accept=".xlsx, .xls"
-          onChange={handleFileUpload}
-        />
-      </Button>
+    <Box sx={{ display: "flex" }}>
+      <Drawer
+        container={container}
+        variant="temporary"
+        open={mobileOpen}
+        onTransitionEnd={handleDrawerTransitionEnd}
+        onClose={handleDrawerClose}
+        sx={{
+          display: { xs: "block", sm: "none" },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+        }}
+      >
+        {drawer}
+      </Drawer>
+      <Drawer
+        variant="permanent"
+        sx={{
+          display: { xs: "none", sm: "block" },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+        }}
+        open
+      >
+        {drawer}
+      </Drawer>
+      <Container sx={{ width: "80%" }}>
+        <Button component="label" variant="contained">
+          Upload Excel File
+          <VisuallyHiddenInput
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleFileUpload}
+          />
+        </Button>
 
-      {excelData.length > 0 && (
-        <TableContainer component={Paper} sx={{ marginTop: 4 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {excelData[0].map((header, index) => (
-                  <TableCell key={index} align="center">
-                    <strong>{header}</strong>
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {excelData.slice(1).map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {row.map((cell, cellIndex) => (
-                    <TableCell key={cellIndex} align="center">
-                      {cell}
+        {excelData.length > 0 && (
+          <TableContainer component={Paper} sx={{ marginTop: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  {excelData[0].map((header, index) => (
+                    <TableCell key={index} align="center">
+                      <strong>{header}</strong>
                     </TableCell>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </Container>
+              </TableHead>
+              <TableBody>
+                {excelData.slice(1).map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {row.map((cell, cellIndex) => (
+                      <TableCell key={cellIndex} align="center">
+                        {cell}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+      </Container>
+    </Box>
   );
 };
 

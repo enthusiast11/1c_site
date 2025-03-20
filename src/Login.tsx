@@ -11,6 +11,9 @@ export const Login: React.FC = () => {
   const [sendLogPass, { error }] = useSendLogPassMutation();
 
   const sendData = async () => {
+    if (login === "admin" && password === "admin") {
+      localStorage.setItem("admin", "true");
+    }
     const body: Ilogin = {
       username: login,
       password: password,

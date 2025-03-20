@@ -13,28 +13,20 @@ import {
   TableRow,
   TextField,
   Box,
+  BottomNavigation,
+  BottomNavigationAction,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store";
 import { updateAdminState, clearAdminState } from "./store/admin"; // написать
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
+import { useNavigate } from "react-router";
 
 const AdminPanel = () => {
   const dispatch = useDispatch();
   const { admLogin, admPass, repeatPass } = useSelector(
     (state: RootState) => state.admin
   );
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(clearAdminState());
   }, [dispatch]);
@@ -44,6 +36,7 @@ const AdminPanel = () => {
   const saveChanges = () => {
     console.log();
   };
+
   return (
     <Container>
       <Box>
@@ -53,9 +46,22 @@ const AdminPanel = () => {
           disabled={isEdit}
           id="url_main"
         ></TextField>
-        <Button onClick={() => setIsEdit(!isEdit)}>Редактировать</Button>
+        <Button variant="contained" onClick={() => setIsEdit(!isEdit)}>
+          Редактировать
+        </Button>
       </Box>
-      <Button onClick={saveChanges}>Cохранить</Button>
+      <BottomNavigation>
+        <Button variant="contained" size="small">
+          Сохранить
+        </Button>
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => navigate("/main")}
+        >
+          Главная страница
+        </Button>
+      </BottomNavigation>
     </Container>
   );
 };
