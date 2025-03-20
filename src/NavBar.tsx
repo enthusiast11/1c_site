@@ -68,7 +68,7 @@ const NavBar = (props: IProps) => {
         onClose={handleDrawerClose}
         sx={{
           display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: "auto" },
         }}
       >
         {drawer}
@@ -77,7 +77,7 @@ const NavBar = (props: IProps) => {
         variant="permanent"
         sx={{
           display: { xs: "none", sm: "block" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+          "& .MuiDrawer-paper": { boxSizing: "border-box", width: "auto" },
         }}
         open
       >

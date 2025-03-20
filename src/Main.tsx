@@ -12,6 +12,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
 } from "@mui/material";
 import NavBar from "./NavBar";
 
@@ -29,6 +30,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const Main = () => {
   const [excelData, setExcelData] = useState<Array<Array<string | number>>>([]);
+  const [isEdit, setIsEdit] = useState<true | false>(true);
 
   const formatExcelDate = (serial: number): string => {
     const excelEpoch = new Date(1899, 11, 30);
@@ -89,15 +91,28 @@ const Main = () => {
             onChange={handleFileUpload}
           />
         </Button>
+        <Button
+          variant="contained"
+          onClick={() => setIsEdit(!isEdit)}
+          sx={{
+            ml: 1,
+            flexShrink: 0,
+          }}
+        >
+          Редактировать
+        </Button>
 
         {excelData.length > 0 && (
-          <TableContainer component={Paper} sx={{ marginTop: 4 }}>
+          <TableContainer
+            component={Paper}
+            sx={{ marginTop: 4, overflow: "scroll" }}
+          >
             <Table>
               <TableHead>
                 <TableRow>
                   {excelData[0].map((header, index) => (
                     <TableCell key={index} align="center">
-                      <strong>{header}</strong>
+                      {header}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -107,7 +122,17 @@ const Main = () => {
                   <TableRow key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                       <TableCell key={cellIndex} align="center">
-                        {cell}
+                        <TextField
+                          contentEditable
+                          value={cell}
+                          disabled={isEdit}
+                          variant="standard"
+                          size="small"
+                          sx={{
+                            width: "100%",
+                            overflow: "visible",
+                          }}
+                        ></TextField>
                       </TableCell>
                     ))}
                   </TableRow>

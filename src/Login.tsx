@@ -34,11 +34,13 @@ export const Login: React.FC = () => {
             onChange={(e) => setLogin(e.currentTarget.value)}
             label="Введите логин"
             variant="outlined"
+            type="password"
           />
           <TextField
             onChange={(e) => setPassword(e.currentTarget.value)}
             label="Введите пароль"
             variant="outlined"
+            type="password"
           />
           <Button onClick={sendData} variant="contained">
             Войти
