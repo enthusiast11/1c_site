@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSaveSheetMutation } from "./store/rtk-query/sendSheet";
 import * as XLSX from "xlsx";
 import { styled } from "@mui/material/styles";
 import {
@@ -29,8 +30,12 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const Main = () => {
-  const [excelData, setExcelData] = useState<Array<Array<string | number>>>([]);
-  const [isEdit, setIsEdit] = useState<true | false>(true);
+  const [editableData, setEditableData] = useState<
+    Array<Array<string | number>>
+  >([]);
+  const [isEdit, setIsEdit] = useState(false);
+
+  const [saveSheet] = useSaveSheetMutation();
 
   const formatExcelDate = (serial: number): string => {
     const excelEpoch = new Date(1899, 11, 30);
@@ -53,7 +58,6 @@ const Main = () => {
       const workbook = XLSX.read(data, { type: "array" });
 
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
       const jsonData: Array<Array<string | number>> = XLSX.utils.sheet_to_json(
         worksheet,
         { header: 1 }
@@ -74,9 +78,29 @@ const Main = () => {
         })
       );
 
-      setExcelData(formattedData);
+      setEditableData(formattedData);
     };
     reader.readAsArrayBuffer(file);
+  };
+
+  const handleCellChange = (
+    rowIndex: number,
+    cellIndex: number,
+    value: string
+  ) => {
+    const newData = [...editableData];
+    newData[rowIndex][cellIndex] = value;
+    setEditableData(newData);
+  };
+
+  const handleSave = async () => {
+    try {
+      await saveSheet(editableData).unwrap();
+      alert("Данные успешно сохранены!");
+    } catch (error) {
+      console.error("Ошибка при сохранении:", error);
+      alert("Не удалось сохранить данные");
+    }
   };
 
   return (
@@ -94,23 +118,25 @@ const Main = () => {
         <Button
           variant="contained"
           onClick={() => setIsEdit(!isEdit)}
-          sx={{
-            ml: 1,
-            flexShrink: 0,
-          }}
+          sx={{ ml: 1 }}
         >
-          Редактировать
+          {isEdit ? "Закончить редактирование" : "Редактировать"}
+        </Button>
+        <Button
+          variant="contained"
+          color="success"
+          onClick={handleSave}
+          sx={{ ml: 1 }}
+        >
+          Сохранить и отправить
         </Button>
 
-        {excelData.length > 0 && (
-          <TableContainer
-            component={Paper}
-            sx={{ marginTop: 4, overflow: "scroll" }}
-          >
+        {editableData.length > 0 && (
+          <TableContainer component={Paper} sx={{ marginTop: 4 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  {excelData[0].map((header, index) => (
+                  {editableData[0].map((header, index) => (
                     <TableCell key={index} align="center">
                       {header}
                     </TableCell>
@@ -118,21 +144,24 @@ const Main = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {excelData.slice(1).map((row, rowIndex) => (
+                {editableData.slice(1).map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                       <TableCell key={cellIndex} align="center">
                         <TextField
-                          contentEditable
                           value={cell}
-                          disabled={isEdit}
+                          onChange={(e) =>
+                            handleCellChange(
+                              rowIndex + 1,
+                              cellIndex,
+                              e.target.value
+                            )
+                          }
+                          disabled={!isEdit}
                           variant="standard"
                           size="small"
-                          sx={{
-                            width: "100%",
-                            overflow: "visible",
-                          }}
-                        ></TextField>
+                          sx={{ width: "100%" }}
+                        />
                       </TableCell>
                     ))}
                   </TableRow>

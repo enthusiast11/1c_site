@@ -68,7 +68,11 @@ const NavBar = (props: IProps) => {
         onClose={handleDrawerClose}
         sx={{
           display: { xs: "block", sm: "none" },
-          "& .MuiDrawer-paper": { boxSizing: "border-box", width: "auto" },
+          "& .MuiDrawer-paper": {
+            boxSizing: "border-box",
+            width: "auto",
+            marginTop: "64px",
+          },
         }}
       >
         {drawer}

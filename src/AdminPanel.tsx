@@ -33,6 +33,7 @@ const AdminPanel = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
+          position: "relative",
 
           padding: "20px",
           gap: "20px",
@@ -70,7 +71,7 @@ const AdminPanel = () => {
             left: 0,
             right: 0,
 
-            padding: "10px 24px 10px 278px",
+            padding: "10px 24px 10px 10vw",
             display: "flex",
             justifyContent: "space-between",
           }}
