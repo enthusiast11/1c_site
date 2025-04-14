@@ -20,6 +20,8 @@ import {
   TextField,
 } from "@mui/material";
 import NavBar from "./NavBar";
+import { RootState } from "./store";
+import { useSelector } from "react-redux";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -43,6 +45,7 @@ const Main = () => {
   const [saveSheet] = useSaveSheetMutation();
 
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const currentUrl = useSelector((state: RootState) => state.admin.url);
 
   useEffect(() => {
     setVisibleData(fullData.slice((currentPage - 1) * 15, currentPage * 15));
@@ -108,7 +111,11 @@ const Main = () => {
     try {
       console.log("Проверка данных", fullData);
 
-      await saveSheet(fullData).unwrap();
+      await saveSheet({
+        data: fullData,
+        endpointUrl: currentUrl,
+      }).unwrap();
+
       alert("Данные успешно сохранены!");
     } catch (error) {
       console.error("Ошибка при сохранении:", error);
