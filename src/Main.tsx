@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+//Повторный загрузка файла не вызывает метод пагинации
+//Проверить метод pagination и загрузку данных
+
+import React, { useEffect, useState } from "react";
 import { useSaveSheetMutation } from "./store/rtk-query/sendSheet";
 import * as XLSX from "xlsx";
 import { styled } from "@mui/material/styles";
@@ -6,6 +9,7 @@ import {
   Box,
   Button,
   Container,
+  Pagination,
   Paper,
   Table,
   TableBody,
@@ -30,12 +34,19 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const Main = () => {
-  const [editableData, setEditableData] = useState<
-    Array<Array<string | number>>
-  >([]);
+  const [fullData, setFullData] = useState<Array<Array<string | number>>>([]);
+  const [visibleData, setVisibleData] = useState<Array<Array<string | number>>>(
+    []
+  );
   const [isEdit, setIsEdit] = useState(false);
 
   const [saveSheet] = useSaveSheetMutation();
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  useEffect(() => {
+    setVisibleData(fullData.slice((currentPage - 1) * 15, currentPage * 15));
+  }, [currentPage, fullData]);
 
   const formatExcelDate = (serial: number): string => {
     const excelEpoch = new Date(1899, 11, 30);
@@ -78,7 +89,7 @@ const Main = () => {
         })
       );
 
-      setEditableData(formattedData);
+      setFullData(formattedData);
     };
     reader.readAsArrayBuffer(file);
   };
@@ -88,14 +99,16 @@ const Main = () => {
     cellIndex: number,
     value: string
   ) => {
-    const newData = [...editableData];
+    const newData = [...fullData];
     newData[rowIndex][cellIndex] = value;
-    setEditableData(newData);
+    setFullData(newData);
   };
 
   const handleSave = async () => {
     try {
-      await saveSheet(editableData).unwrap();
+      console.log("Проверка данных", fullData);
+
+      await saveSheet(fullData).unwrap();
       alert("Данные успешно сохранены!");
     } catch (error) {
       console.error("Ошибка при сохранении:", error);
@@ -131,12 +144,12 @@ const Main = () => {
           Сохранить и отправить
         </Button>
 
-        {editableData.length > 0 && (
+        {visibleData.length > 0 && (
           <TableContainer component={Paper} sx={{ marginTop: 4 }}>
             <Table>
               <TableHead>
                 <TableRow>
-                  {editableData[0].map((header, index) => (
+                  {visibleData[0].map((header, index) => (
                     <TableCell key={index} align="center">
                       {header}
                     </TableCell>
@@ -144,7 +157,7 @@ const Main = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {editableData.slice(1).map((row, rowIndex) => (
+                {visibleData.slice(1).map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
                     {row.map((cell, cellIndex) => (
                       <TableCell key={cellIndex} align="center">
@@ -169,6 +182,25 @@ const Main = () => {
               </TableBody>
             </Table>
           </TableContainer>
+        )}
+        {fullData.length === 0 ? (
+          ""
+        ) : (
+          <Box
+            sx={{
+              padding: "16px 0",
+              display: "flex",
+              justifyContent: "center",
+              zIndex: 1000,
+            }}
+          >
+            <Pagination
+              sx={{ padding: "8px" }}
+              count={Math.ceil(fullData.length / 15)}
+              page={currentPage}
+              onChange={(_, page) => setCurrentPage(page)}
+            ></Pagination>
+          </Box>
         )}
       </Container>
     </Box>
