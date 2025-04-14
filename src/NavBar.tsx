@@ -17,7 +17,6 @@ const NavBar = (props: IProps) => {
   const [, setIsClosing] = React.useState(false);
   const navigate = useNavigate();
   const admin = localStorage.getItem("admin");
-  const drawerWidth = 254;
   const { window } = props;
   const container =
     window !== undefined ? () => window().document.body : undefined;
