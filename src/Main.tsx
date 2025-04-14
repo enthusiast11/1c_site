@@ -145,22 +145,42 @@ const Main = () => {
         </Button>
 
         {visibleData.length > 0 && (
-          <TableContainer component={Paper} sx={{ marginTop: 4 }}>
+          <TableContainer
+            component={Paper}
+            sx={{
+              marginTop: 4,
+              overflowX: "auto",
+              maxWidth: "100%",
+            }}
+          >
             <Table>
-              <TableHead>
-                <TableRow>
-                  {visibleData[0].map((header, index) => (
-                    <TableCell key={index} align="center">
-                      {header}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
+              {currentPage === 1 ? (
+                <TableHead>
+                  <TableRow>
+                    {visibleData[0].map((header, index) => (
+                      <TableCell key={index} align="center">
+                        {header}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+              ) : (
+                ""
+              )}
               <TableBody>
                 {visibleData.slice(1).map((row, rowIndex) => (
                   <TableRow key={rowIndex}>
                     {row.map((cell, cellIndex) => (
-                      <TableCell key={cellIndex} align="center">
+                      <TableCell
+                        key={cellIndex}
+                        align="center"
+                        sx={{
+                          minWidth: 140,
+                          width: "auto",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                        }}
+                      >
                         <TextField
                           value={cell}
                           onChange={(e) =>
